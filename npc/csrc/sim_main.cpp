@@ -3,12 +3,12 @@
 #include <stdlib.h>
 #include <assert.h>
 
+//接入nvboard
+#include <nvboard.h>
+
 //使用verilater必须include
 #include "Vtop.h" //仿真模型的头文件，由top.v生成，如果顶层文件名更改则也需要更改
 #include <verilated.h>
-
-//接入nvboard
-#include <nvboard.h>
 
 #define CONFIG_FST_WAVE_TRACE 1
 
@@ -29,6 +29,15 @@ static void reset(int n) {
   top->rst = 0;
 }
 
+
+void nvboard_bind_all_pins_temp(Vtop* top) {
+	nvboard_bind_pin( &top->f, 1, LD0);
+	nvboard_bind_pin( &top->a, 1, SW1);
+	nvboard_bind_pin( &top->b, 1, SW0);
+}
+/*
+*/
+
 //如果生成FST格式的wave
 #if CONFIG_FST_WAVE_TRACE
 #include "verilated_fst_c.h"			//波形文件所需的头文件
@@ -39,7 +48,7 @@ VerilatedFstC *tfp = new VerilatedFstC; 	// 创建一个波形文件指针
 int main(int argc, char **argv)
 {
 	//绑定nvboard引脚，初始化设置
-	nvboard_bind_all_pins(top);
+	nvboard_bind_all_pins_temp(top);
   	nvboard_init();
 	// 传递参数给verilator
 	contextp->commandArgs(argc, argv);
@@ -69,7 +78,7 @@ int main(int argc, char **argv)
 		top->clk = !top->clk; 	// 随着仿真时间倒转clk，产生时钟周期
 		top->eval(); 		//更新电路状态
 		nvboard_update();		//
-		printf("a = %d, b = %d, f = %d\n", a, b, top->f);	//按需打印想要的
+		printf("a = %d, b = %d, f = %d\n", top->a, top->b, top->f);	//按需打印想要的
     
 		contextp->timeInc(1); //推动仿真时间
 		
