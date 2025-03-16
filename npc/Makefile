@@ -4,6 +4,9 @@ TOPNAME = top
 #指定verilator
 VERILATOR = verilator
 
+#NVBoard指定引脚约束文件
+NXDC_FILES = constr/top.nxdc
+
 ######################## 构建后的项目 ########################
 #构建后的地址
 BUILD_DIR = ./build
@@ -52,11 +55,25 @@ VERILATOR_FLAGS += --top-module $(TOPNAME)
 VERILATOR_FLAGS += --cc --exe -o $(abspath $(BIN))
 
 ######################## 查找相关文件 ########################
+# NVBoard所用到的约束文件 constraint file
+SRC_AUTO_BIND = $(abspath $(BUILD_DIR)/auto_bind.cpp)
+$(SRC_AUTO_BIND): $(NXDC_FILES)
+	python3 $(NVBOARD_HOME)/scripts/auto_pin_bind.py $^ $@
+	
 #所有 .v 或者 .sv 文件
 VSRCS = $(shell find $(abspath ./vsrc) -name "*.v" -or -name "*.sv")
 
 #所有 .c 或 .cc 或 .cpp 文件
 CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+
+#对照NVBoard示例Makefile添加的依赖
+CSRCS += $(SRC_AUTO_BIND)
+
+# rules for NVBoard
+include $(NVBOARD_HOME)/scripts/nvboard.mk
+INCFLAGS = $(addprefix -I, $(INC_PATH))
+# rules for verilator from NVBoard
+CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 
 all:
 	@echo "Write this Makefile by your self."
@@ -70,7 +87,7 @@ sim:
 	@mkdir -p $(OBJ_DIR)
 
 #使用verilator进行编译，产生可执行文件
-	@$(VERILATOR) $(VERILATOR_FLAGS) $(VSRCS) $(CSRCS)
+	@$(VERILATOR) $(VERILATOR_FLAGS) $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE)
 
 	@echo
 	@echo "-------------------- RUN --------------------"
@@ -111,6 +128,11 @@ gdb:
 	@echo "-------------------- DONE --------------------"
 	@echo "To see waveforms, open $(BUILD_DIR)/logs/cpu_wave.fst in a waveform viewer"
 	@echo
+
+clean:
+	rm -rf $(BUILD_DIR)
+	
+.PHONY:  all clean sim gbd
 
 include ../Makefile
 
