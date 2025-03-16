@@ -6,7 +6,7 @@ VERILATOR = verilator
 
 ######################## 构建后的项目 ########################
 #构建后的地址
-BUILD_DIR = ./build/verilator
+BUILD_DIR = ./build
 
 #构建后文件存放的地址
 OBJ_DIR = $(BUILD_DIR)/obj_dir
@@ -53,10 +53,10 @@ VERILATOR_FLAGS += --cc --exe -o $(abspath $(BIN))
 
 ######################## 查找相关文件 ########################
 #所有 .v 或者 .sv 文件
-VSRCS = $(shell find $(abspath ./build/chisel) -name "*.v" -or -name "*.sv")
+VSRCS = $(shell find $(abspath ./vsrc) -name "*.v" -or -name "*.sv")
 
 #所有 .c 或 .cc 或 .cpp 文件
-CSRCS = $(shell find $(abspath ./src/main/cpp) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
+CSRCS = $(shell find $(abspath ./csrc) -name "*.c" -or -name "*.cc" -or -name "*.cpp")
 
 all:
 	@echo "Write this Makefile by your self."
