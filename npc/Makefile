@@ -145,12 +145,28 @@ INCFLAGS = $(addprefix -I, $(INC_PATH))
 CXXFLAGS += $(INCFLAGS) -DTOP_NAME="\"V$(TOPNAME)\""
 	
 $(BIN): $(VSRCS) $(CSRCS) $(NVBOARD_ARCHIVE) 
+	$(call git_commit, "sim RTL") # DO NOT REMOVE THIS LINE!!!
 	@rm -rf $(OBJ_DIR)
 	$(VERILATOR) $(VERILATOR_FLAGS) \
 		--top-module $(TOPNAME) $^ \
 		$(addprefix -CFLAGS , $(CXXFLAGS)) $(addprefix -LDFLAGS , $(LDFLAGS)) \
 		--Mdir $(OBJ_DIR) --exe -o $(abspath $(BIN))
 		
+		@echo
+	@echo "-------------------- RUN --------------------"
+
+#清空再创建波形文件夹
+	@rm -rf $(BUILD_DIR)/logs
+	@mkdir -p $(BUILD_DIR)/logs
+
+#执行可执行文件，运行并仿真，生成波形
+	@$(BIN) +trace
+
+	@echo
+	@echo "-------------------- DONE --------------------"
+	@echo "To see waveforms, open $(BUILD_DIR)/logs/cpu_wave.fst in a gtkwave"
+	@echo
+	
 all: default
 
 run: $(BIN)
