@@ -111,7 +111,11 @@ gdb:
 	@echo "-------------------- DONE --------------------"
 	@echo "To see waveforms, open $(BUILD_DIR)/logs/cpu_wave.fst in a waveform viewer"
 	@echo
+clean:
+	rm -rf $(BUILD_DIR)
+	
+.PHONY:  all clean sim gbd 
 
-include ../Makefile
+include ../../Makefile
 
 
