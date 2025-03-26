@@ -7,10 +7,10 @@
 #include <nvboard.h>
 
 //使用verilater必须include
-#include "Vlight.h" //仿真模型的头文件，由top.v生成，如果顶层文件名更改则也需要更改
+#include "Vlight.h" 	//仿真模型的头文件，由top.v生成，如果顶层文件名更改则也需要更改
 #include <verilated.h>
 
-#define CONFIG_FST_WAVE_TRACE 0	//不生成波形
+#define CONFIG_FST_WAVE_TRACE 1	//不生成波形
 
 // contextp用来保存仿真的时间
 VerilatedContext *contextp = new VerilatedContext;
