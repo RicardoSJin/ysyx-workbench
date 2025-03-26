@@ -75,11 +75,11 @@ int main(int argc, char **argv)
 	/**************verilator的仿真循环*****************/
 	while (1)	// 仿真50个循环后就自动结束
 	{
-		nvboard_update();		//
+		nvboard_update();		
 		single_cycle();
 //		printf("led = %d\n", top->led);	//按需打印想要的
     
-		contextp->timeInc(1); //推动仿真时间
+		contextp->timeInc(1); //推动仿真时间,因为一个时钟周期进行一次，所以波形中没有时钟翻转
 		
 #if CONFIG_FST_WAVE_TRACE
 		tfp->dump(contextp->time()); // 按照时间采样
